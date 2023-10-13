@@ -135,7 +135,7 @@ class _PostsState extends State<Posts> {
               const SizedBox(
                 height: 10,
               ),
-              if (posts[index].imageUrl != null)
+              if (posts[index].imageUrl != "https://4waysproduction.co.za/mob_app/api/")
                 Image.network(
                   height: 300,
                   width: MediaQuery.of(context).size.width,

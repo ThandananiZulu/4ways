@@ -50,10 +50,10 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
   }
 
   Future<void> handlePost() async {
-   String name = await SessionManager().get("name");
+    String name = await SessionManager().get("name");
     String surname = await SessionManager().get("surname");
     var user_id = await SessionManager().get("userID");
-    
+
     setState(() {
       isLoading = true;
     });
@@ -62,16 +62,18 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
 
     try {
       String filePath = imageController.text;
-
-      if (filePath.startsWith("File: '") && filePath.endsWith("'")) {
-        filePath = filePath.substring(7, filePath.length - 1);
-      }
-
       var request = http.MultipartRequest('POST', url);
+      print("Wow");
+      print(filePath);
+      if (filePath != '') {
+        if (filePath.startsWith("File: '") && filePath.endsWith("'")) {
+          filePath = filePath.substring(7, filePath.length - 1);
+        }
+        
 
-      request.files
-          .add(await http.MultipartFile.fromPath('image_path', filePath));
-
+        request.files
+            .add(await http.MultipartFile.fromPath('image_path', filePath));
+      }
       request.fields['name'] = name.toString();
       request.fields['surname'] = surname.toString();
       request.fields['post'] = postController.text.toString();
@@ -88,11 +90,11 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
 
           if (r['error'] == false) {
             Toast.showToast(r['message']);
-              List<Post> fetchAllPosts = await fetchPosts();
-               setState(() {
+            List<Post> fetchAllPosts = await fetchPosts();
+            setState(() {
               posts = fetchAllPosts;
-              
             });
+      
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -121,16 +123,16 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
   getter() async {
     String name = await SessionManager().get("name");
     String surname = await SessionManager().get("surname");
-        int user_id = await SessionManager().get("userID");
+    int user_id = await SessionManager().get("userID");
     // Display the retrieved value in the text controller
     setState(() {
       nameController.text = "$name ";
-       surnameController.text = " $surname";
-         userIDController.text = " $user_id";
-       
+      surnameController.text = " $surname";
+      userIDController.text = " $user_id";
     });
   }
-fetchPosts() async {
+
+  fetchPosts() async {
     var userID = await SessionManager().get("userID");
     List<Post> newPosts = [];
     Functions functions = Functions();
@@ -146,7 +148,6 @@ fetchPosts() async {
       if (response.statusCode == 200) {
         var r = json.decode(response.body);
 
-        
         for (var postData in r['data']) {
           DateTime postDate = DateTime.parse(postData['post_date']);
           String formattedTimeAgo = functions.timeAgo(postDate);
@@ -163,14 +164,14 @@ fetchPosts() async {
             imageUrl: postData['image_path'],
           );
           newPosts.add(Post(
-          id: postData['post_id'],
+            id: postData['post_id'],
             user: postData['users_id'] == userID
                 ? meUser
                 : postUser, // Assuming you still want to use the same user for all posts
             caption: postData['content'],
             timeAgo: formattedTimeAgo,
             imageUrl: postData['post_image'],
-            likes:  postData['likes']??0,
+            likes: postData['likes'] ?? 0,
             comments: 0,
             shares: 0,
           ));
@@ -268,7 +269,6 @@ fetchPosts() async {
                 children: [
                   ProfileAvatar(imageUrl: widget.currentUser.imageUrl),
                   const SizedBox(width: 8.0),
-                 
                   Expanded(
                     child: SizedBox(
                       height: 50.0,
@@ -285,13 +285,13 @@ fetchPosts() async {
               ),
               const Divider(height: 10.0, thickness: 0.5),
               ElevatedButton(
-                onPressed: () =>  handlePost(),
+                onPressed: () => handlePost(),
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF0190EE),
                 ),
                 child: Text('Send Post'),
               ),
-               if (_image != null) Image.file(_image!, width: 100, height: 100),
+              if (_image != null) Image.file(_image!, width: 100, height: 100),
               const SizedBox(
                   height: 10.0), // Add spacing between text field and button
               Row(
@@ -326,7 +326,6 @@ fetchPosts() async {
                     label: Text('Video'),
                   ),
                   // Display the selected image
-                 
                 ],
               ),
             ],
